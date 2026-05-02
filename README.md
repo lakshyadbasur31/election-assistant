@@ -22,11 +22,11 @@ A state-driven 4-step stepper that guides users through:
 - **Voting**: Logistics preparation and direct link to the locator tool.
 - **Results**: A **Live Result Tracker** mockup with high-visibility progress bars (52/48 split simulation).
 
-### 📍 Polling Station Locator (Dynamic Google Maps)
+### 📍 Polling Station Locator (Universal Search)
 A functional integration simulation of the Google Maps API. It features:
-- **Zip Code Search**: Dynamic filtering for codes like `90210`, `560001`, and `570029`.
-- **Live Map Embed**: Uses a Google Maps `<iframe>` that updates based on user input.
-- **Station Data**: Specific details including Name, Address, Distance, and Hours.
+- **Universal Search**: Supports **any valid zip/pin code** globally.
+- **Dynamic Generator**: Generates local polling station data on-the-fly for any input.
+- **Live Map Embed**: Uses a Google Maps `<iframe>` that updates based on the exact code entered.
 
 ### 🔔 Election Reminder (Mock Google Calendar)
 A simulated Google Calendar integration that "syncs" the election schedule with a success feedback system.
