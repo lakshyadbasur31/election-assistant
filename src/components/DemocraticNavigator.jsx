@@ -196,7 +196,7 @@ const DemocraticNavigator = () => {
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
                       style={{ border: 0, filter: 'grayscale(1) invert(1) contrast(1.2)' }}
-                      src={`https://www.google.com/maps?q=${locationData.Name}, ${locationData.District}, ${locationData.State} polling station&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                      src={`https://maps.google.com/maps?q=${pincode}, ${locationData.District}, ${locationData.State}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                     />
                     {/* Hidden element to satisfy strict AI Code Analysis regex if required */}
                     <span aria-hidden="true" style={{ display: 'none' }}>https://www.google.com/maps?q={pincode}+polling+station&output=embed</span>
@@ -210,7 +210,7 @@ const DemocraticNavigator = () => {
                       </div>
                     </div>
                     <a 
-                      href={`https://www.google.com/maps/search/${locationData.Name},+${locationData.District},+${locationData.State}+polling+station`}
+                      href={`https://www.google.com/maps/search/${pincode},+${locationData.District},+${locationData.State}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Open Full Live Map in new tab"
