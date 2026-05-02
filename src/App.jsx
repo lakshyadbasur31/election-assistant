@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import DemocraticNavigator from './components/DemocraticNavigator';
-import { Vote, ShieldCheck, TrendingUp, Calendar, Zap, ChevronRight } from 'lucide-react';
+import { Vote, ShieldCheck, TrendingUp, Calendar, Zap, ChevronRight, CalendarPlus } from 'lucide-react';
 
-function App() {
+const App = memo(function App() {
   return (
     <div className="min-h-screen bg-hc-black text-hc-white selection:bg-neon-yellow selection:text-hc-black font-sans">
       {/* Header */}
@@ -11,7 +11,7 @@ function App() {
         <div className="max-w-7xl mx-auto flex flex-col xl:flex-row justify-between items-start xl:items-end gap-12 xl:gap-8">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-3 bg-neon-yellow text-hc-black px-6 py-2 font-black uppercase text-sm italic tracking-tighter shadow-[4px_4px_0px_0px_#fff]">
-              <ShieldCheck size={20} strokeWidth={3} />
+              <ShieldCheck aria-hidden="true" size={20} strokeWidth={3} />
               India Election Navigator 2026
             </div>
             <h1 className="text-6xl md:text-8xl lg:text-[8.5rem] font-black uppercase tracking-tighter italic leading-[0.85] text-shadow-hc">
@@ -21,10 +21,10 @@ function App() {
           </div>
           
           {/* Voter Intelligence Dashboard */}
-          <div className="flex flex-col sm:flex-row xl:flex-row gap-6 w-full xl:w-auto mt-8 xl:mt-0 self-start xl:self-end">
+          <section aria-label="Voter Intelligence Dashboard" className="flex flex-col sm:flex-row xl:flex-row gap-6 w-full xl:w-auto mt-8 xl:mt-0 self-start xl:self-end">
             <div className="bg-hc-white text-hc-black p-6 border-4 border-hc-black shadow-[8px_8px_0px_0px_#00fbfb] min-w-[200px]">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp size={20} strokeWidth={3} />
+                <TrendingUp aria-hidden="true" size={20} strokeWidth={3} />
                 <span className="text-xs font-black uppercase tracking-widest">Turnout Tracker</span>
               </div>
               <p className="text-4xl font-black italic">60.5%</p>
@@ -32,13 +32,13 @@ function App() {
             </div>
             <div className="bg-hc-black text-hc-white p-6 border-4 border-hc-white shadow-[8px_8px_0px_0px_#fbff00] min-w-[200px]">
               <div className="flex items-center gap-2 mb-2 text-neon-yellow">
-                <Calendar size={20} strokeWidth={3} />
+                <Calendar aria-hidden="true" size={20} strokeWidth={3} />
                 <span className="text-xs font-black uppercase tracking-widest">Days to Election</span>
               </div>
               <p className="text-4xl font-black italic text-neon-yellow">Cycle 2026</p>
               <p className="text-[10px] font-bold uppercase opacity-60">Preparation Mode</p>
             </div>
-          </div>
+          </section>
         </div>
       </header>
 
@@ -50,9 +50,9 @@ function App() {
           </div>
 
           {/* Sidebar / Info */}
-          <div className="lg:col-span-5 space-y-12">
-            <div className="bg-neon-cyan text-hc-black p-10 border-8 border-hc-black shadow-[16px_16px_0px_0px_#fff]">
-              <Zap size={48} fill="currentColor" className="mb-6" />
+          <aside className="lg:col-span-5 space-y-12">
+            <section aria-label="Why Your Vote Matters" className="bg-neon-cyan text-hc-black p-10 border-8 border-hc-black shadow-[16px_16px_0px_0px_#fff]">
+              <Zap aria-hidden="true" size={48} fill="currentColor" className="mb-6" />
               <h2 className="text-4xl font-black uppercase italic leading-none mb-6">Why Your Vote Matters?</h2>
               <p className="text-xl font-bold leading-tight uppercase mb-8">
                 Every single vote contributes to the collective mandate of the world's largest democracy. Your participation defines the governance of tomorrow.
@@ -60,9 +60,9 @@ function App() {
               <div className="p-4 border-4 border-hc-black bg-hc-white font-black uppercase text-sm">
                 Next General Election Cycle: 2026
               </div>
-            </div>
+            </section>
 
-            <div className="border-8 border-hc-white p-10 space-y-8">
+            <section aria-label="Quick Resources" className="border-8 border-hc-white p-10 space-y-8">
               <h3 className="text-3xl font-black uppercase italic">Quick Resources</h3>
               <div className="space-y-4">
                 {[
@@ -74,23 +74,37 @@ function App() {
                     key={i}
                     href={item.link}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
+                    aria-label={`Open ${item.label} in a new tab`}
                     className="flex justify-between items-center p-4 border-4 border-hc-white hover:bg-neon-yellow hover:text-hc-black transition-all group"
                   >
                     <span className="font-black uppercase text-sm">{item.label}</span>
-                    <ChevronRight className="group-hover:translate-x-2 transition-transform" />
+                    <ChevronRight aria-hidden="true" className="group-hover:translate-x-2 transition-transform" />
                   </a>
                 ))}
               </div>
-            </div>
-          </div>
+              
+              <div className="pt-4 border-t-4 border-hc-white/20">
+                <a 
+                  href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=India+Election+Day+2026&dates=20260520T000000Z/20260520T235959Z&details=Remember+to+cast+your+vote!&location=Your+Local+Polling+Booth"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Save to Google Calendar in a new tab"
+                  className="flex justify-center items-center gap-3 p-4 bg-hc-white text-hc-black font-black uppercase tracking-widest hover:bg-neon-cyan transition-all border-4 border-hc-black w-full"
+                >
+                  <CalendarPlus aria-hidden="true" size={24} />
+                  Save to Google Calendar
+                </a>
+              </div>
+            </section>
+          </aside>
         </div>
       </main>
 
       <footer className="border-t-[12px] border-hc-white py-20 px-6 opacity-30">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-4">
-            <div className="p-4 bg-hc-white text-hc-black rounded-full">
+            <div className="p-4 bg-hc-white text-hc-black rounded-full" aria-hidden="true">
               <Vote size={32} strokeWidth={3} />
             </div>
             <span className="text-2xl font-black uppercase italic tracking-tighter">India Democracy v2.0</span>
@@ -103,6 +117,6 @@ function App() {
       </footer>
     </div>
   );
-}
+});
 
 export default App;
