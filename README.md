@@ -16,20 +16,20 @@ In the digital age, civic participation is often hindered by fragmented informat
 Calculates days until the next major election (**November 3, 2026**). It uses real-time browser logic to provide an immediate sense of urgency and preparation.
 
 ### 🗺️ Interactive Journey Map
-A 4-step interactive stepper that guides users through:
-- **Voter Registration**: Direct links to status checks and deadlines.
-- **Research**: Non-partisan guide discovery.
-- **Voting**: Logistics and polling place preparation.
-- **Results**: Post-election reporting and certification.
+A state-driven 4-step stepper that guides users through:
+- **Voter Registration**: Simulated live status check and direct links to **vote.gov**.
+- **Research**: Interactive **Candidate Comparison** tool featuring 2026 election stances (Education, Economy, etc.).
+- **Voting**: Logistics preparation and direct link to the locator tool.
+- **Results**: A **Live Result Tracker** mockup with high-visibility progress bars (52/48 split simulation).
 
-### 📍 Polling Station Locator (Mock Google Maps)
-A simulated integration of the Google Maps API. It allows users to:
-- Enter a Zip Code.
-- View a mocked map interface with simulated markers.
-- Get simulated distance and hours of operation.
+### 📍 Polling Station Locator (Dynamic Google Maps)
+A functional integration simulation of the Google Maps API. It features:
+- **Zip Code Search**: Dynamic filtering for codes like `90210`, `560001`, and `570029`.
+- **Live Map Embed**: Uses a Google Maps `<iframe>` that updates based on user input.
+- **Station Data**: Specific details including Name, Address, Distance, and Hours.
 
 ### 🔔 Election Reminder (Mock Google Calendar)
-A simulated Google Calendar integration that "syncs" the election schedule. It demonstrates how digital calendars can be used to prevent voter disenfranchisement caused by missed deadlines.
+A simulated Google Calendar integration that "syncs" the election schedule with a success feedback system.
 
 ## 🛠️ Technical Logic
 

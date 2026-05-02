@@ -56,9 +56,15 @@ const ElectionReminder = () => {
       </div>
       
       {isAdded && (
-        <div className="mt-6 animate-bounce">
-          <div className="bg-hc-white text-hc-black p-4 inline-block border-4 border-neon-cyan font-black uppercase text-sm italic">
-            Success! Simulated Google Calendar Event Created for Nov 3, 2026
+        <div className="mt-8 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="bg-hc-black text-neon-cyan p-6 border-4 border-neon-cyan shadow-[8px_8px_0px_0px_rgba(0,251,255,0.3)] flex items-center gap-4">
+            <div className="bg-neon-cyan text-hc-black p-2 rounded-full">
+              <Check size={24} strokeWidth={4} />
+            </div>
+            <div>
+              <p className="font-black uppercase text-lg italic">Success! Calendar Synced</p>
+              <p className="font-bold opacity-80 uppercase text-xs">Simulated Google Calendar Event Created for Nov 3, 2026</p>
+            </div>
           </div>
         </div>
       )}

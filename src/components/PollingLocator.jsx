@@ -1,24 +1,49 @@
 import React, { useState } from 'react';
 import { MapPin, Search, Navigation } from 'lucide-react';
 
+const mockStations = {
+  '560001': {
+    name: 'Bangalore General Post Office',
+    address: 'Raj Bhavan Road, Bangalore, KA 560001',
+    distance: '0.5 miles away',
+    hours: '8:00 AM - 6:00 PM',
+  },
+  '570029': {
+    name: 'Mysore Palace North Gate',
+    address: 'Sayyaji Rao Road, Mysore, KA 570029',
+    distance: '1.2 miles away',
+    hours: '7:30 AM - 7:30 PM',
+  },
+  '90210': {
+    name: 'Beverly Hills Community Center',
+    address: '455 N Rexford Dr, Beverly Hills, CA 90210',
+    distance: '0.3 miles away',
+    hours: '7:00 AM - 8:00 PM',
+  }
+};
+
 const PollingLocator = () => {
   const [zipCode, setZipCode] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [location, setLocation] = useState(null);
+  const [error, setError] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (!zipCode) return;
     
     setIsSearching(true);
+    setLocation(null);
+    setError(false);
+
     // Simulate API delay
     setTimeout(() => {
-      setLocation({
-        name: 'Central High School Gym',
-        address: '123 Democracy Ave, Liberty City',
-        distance: '0.8 miles away',
-        hours: '7:00 AM - 8:00 PM',
-      });
+      const result = mockStations[zipCode];
+      if (result) {
+        setLocation(result);
+      } else {
+        setError(true);
+      }
       setIsSearching(false);
     }, 1500);
   };
@@ -30,14 +55,14 @@ const PollingLocator = () => {
           <h2 className="text-3xl font-black uppercase mb-6 italic">Polling Station Locator</h2>
           <form onSubmit={handleSearch} className="space-y-6">
             <div>
-              <label htmlFor="zip" className="block text-xs font-black uppercase tracking-widest mb-2">Enter Zip Code</label>
+              <label htmlFor="zip" className="block text-xs font-black uppercase tracking-widest mb-2">Enter Zip Code (560001, 570029, 90210)</label>
               <div className="flex gap-2">
                 <input
                   id="zip"
                   type="text"
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
-                  placeholder="e.g. 10001"
+                  placeholder="e.g. 90210"
                   className="flex-1 bg-hc-black text-hc-white border-4 border-hc-black p-4 font-bold focus:border-neon-yellow outline-none transition-colors"
                 />
                 <button 
@@ -73,6 +98,13 @@ const PollingLocator = () => {
                   Get Directions
                 </button>
               </div>
+            ) : error ? (
+              <div className="border-4 border-neon-yellow p-8 text-center bg-hc-black text-hc-white">
+                <p className="font-black uppercase mb-4">No local results found for {zipCode}</p>
+                <button className="bg-neon-yellow text-hc-black px-6 py-3 font-black uppercase tracking-widest hover:bg-hc-white transition-colors">
+                  Search Statewide
+                </button>
+              </div>
             ) : (
               <div className="border-4 border-dashed border-hc-black/20 p-8 text-center">
                 <MapPin size={48} className="mx-auto mb-4 opacity-20" />
@@ -82,32 +114,30 @@ const PollingLocator = () => {
           </div>
         </div>
 
-        {/* Mock Map View */}
-        <div className="flex-1 bg-[#1a1a1a] border-4 border-hc-white relative min-h-[400px] overflow-hidden">
-          <div className="absolute inset-0 opacity-40 bg-[url('https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png')] bg-cover bg-center grayscale contrast-150" />
-          <div className="absolute inset-0 bg-gradient-to-t from-hc-black to-transparent" />
-          
-          <div className="absolute inset-0 flex items-center justify-center">
-            {location && (
-              <div className="relative">
-                <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-neon-cyan text-hc-black px-4 py-2 font-black uppercase text-xs whitespace-nowrap shadow-[4px_4px_0px_0px_#000]">
-                  YOU ARE HERE
-                </div>
-                <div className="w-8 h-8 bg-neon-cyan rounded-full border-4 border-hc-black animate-bounce" />
-                <div className="w-8 h-2 bg-hc-black/50 rounded-full scale-x-150 blur-sm mt-1" />
+        {/* Dynamic Map View */}
+        <div className="flex-1 bg-hc-black border-4 border-hc-white relative min-h-[400px] overflow-hidden">
+          {location ? (
+            <iframe
+              title="Google Maps Polling Locator"
+              width="100%"
+              height="100%"
+              style={{ border: 0, filter: 'grayscale(100%) contrast(1.2) invert(100%)' }}
+              loading="lazy"
+              allowFullScreen
+              src={`https://www.google.com/maps?q=${zipCode}+polling+station&output=embed`}
+            />
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+              <div className="w-24 h-24 border-4 border-hc-white/20 rounded-full flex items-center justify-center mb-6">
+                <MapPin size={48} className="text-hc-white/20" />
               </div>
-            )}
-            
-            {location && (
-              <div className="absolute top-1/3 left-1/4">
-                <div className="w-8 h-8 text-neon-yellow animate-pulse">
-                  <MapPin size={32} strokeWidth={3} />
-                </div>
-              </div>
-            )}
-          </div>
+              <p className="text-hc-white/40 font-black uppercase tracking-widest">
+                Waiting for Location Data...
+              </p>
+            </div>
+          )}
           
-          <div className="absolute bottom-4 left-4 right-4 bg-hc-black/80 backdrop-blur-md p-4 border-2 border-neon-cyan">
+          <div className="absolute bottom-4 left-4 right-4 bg-hc-black/90 backdrop-blur-md p-4 border-2 border-neon-cyan z-20">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neon-cyan opacity-80">Mock Google Maps API Integration (v4.2.0)</p>
           </div>
         </div>
