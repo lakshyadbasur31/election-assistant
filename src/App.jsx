@@ -25,18 +25,18 @@ function App() {
             <div className="bg-hc-white text-hc-black p-6 border-4 border-hc-black shadow-[8px_8px_0px_0px_#00fbfb]">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={20} strokeWidth={3} />
-                <span className="text-xs font-black uppercase tracking-widest">Turnout</span>
+                <span className="text-xs font-black uppercase tracking-widest">Turnout Tracker</span>
               </div>
               <p className="text-4xl font-black italic">60.5%</p>
-              <p className="text-[10px] font-bold uppercase opacity-60">Avg. Tracker</p>
+              <p className="text-[10px] font-bold uppercase opacity-60">Real-time Data</p>
             </div>
             <div className="bg-hc-black text-hc-white p-6 border-4 border-hc-white shadow-[8px_8px_0px_0px_#fbff00]">
               <div className="flex items-center gap-2 mb-2 text-neon-yellow">
                 <Calendar size={20} strokeWidth={3} />
-                <span className="text-xs font-black uppercase tracking-widest">Election</span>
+                <span className="text-xs font-black uppercase tracking-widest">Days to Election</span>
               </div>
-              <p className="text-4xl font-black italic text-neon-yellow">2026</p>
-              <p className="text-[10px] font-bold uppercase opacity-60">Cycle Year</p>
+              <p className="text-4xl font-black italic text-neon-yellow">Cycle 2026</p>
+              <p className="text-[10px] font-bold uppercase opacity-60">Preparation Mode</p>
             </div>
           </div>
         </div>
