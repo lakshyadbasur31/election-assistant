@@ -8,21 +8,21 @@ function App() {
       {/* Header */}
       <header className="border-b-[12px] border-hc-white py-16 px-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-neon-yellow/10 blur-[100px] -z-10" />
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-12">
+        <div className="max-w-7xl mx-auto flex flex-col xl:flex-row justify-between items-start xl:items-end gap-12 xl:gap-8">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-3 bg-neon-yellow text-hc-black px-6 py-2 font-black uppercase text-sm italic tracking-tighter shadow-[4px_4px_0px_0px_#fff]">
               <ShieldCheck size={20} strokeWidth={3} />
               India Election Navigator 2026
             </div>
-            <h1 className="text-8xl md:text-[10rem] font-black uppercase tracking-tighter italic leading-[0.8] text-shadow-hc">
+            <h1 className="text-6xl md:text-8xl lg:text-[8.5rem] font-black uppercase tracking-tighter italic leading-[0.85] text-shadow-hc">
               DEMOCRATIC<br />
               <span className="text-neon-cyan">NAVIGATOR</span>
             </h1>
           </div>
           
           {/* Voter Intelligence Dashboard */}
-          <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
-            <div className="bg-hc-white text-hc-black p-6 border-4 border-hc-black shadow-[8px_8px_0px_0px_#00fbfb]">
+          <div className="flex flex-col sm:flex-row xl:flex-row gap-6 w-full xl:w-auto mt-8 xl:mt-0 self-start xl:self-end">
+            <div className="bg-hc-white text-hc-black p-6 border-4 border-hc-black shadow-[8px_8px_0px_0px_#00fbfb] min-w-[200px]">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={20} strokeWidth={3} />
                 <span className="text-xs font-black uppercase tracking-widest">Turnout Tracker</span>
@@ -30,7 +30,7 @@ function App() {
               <p className="text-4xl font-black italic">60.5%</p>
               <p className="text-[10px] font-bold uppercase opacity-60">Real-time Data</p>
             </div>
-            <div className="bg-hc-black text-hc-white p-6 border-4 border-hc-white shadow-[8px_8px_0px_0px_#fbff00]">
+            <div className="bg-hc-black text-hc-white p-6 border-4 border-hc-white shadow-[8px_8px_0px_0px_#fbff00] min-w-[200px]">
               <div className="flex items-center gap-2 mb-2 text-neon-yellow">
                 <Calendar size={20} strokeWidth={3} />
                 <span className="text-xs font-black uppercase tracking-widest">Days to Election</span>
