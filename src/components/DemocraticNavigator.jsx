@@ -209,33 +209,42 @@ const DemocraticNavigator = ({ lang = 'EN' }) => {
           </section>
         );
       case 4:
-        return (
-          <section className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
-            <h3 className="text-3xl font-black uppercase italic text-neon-cyan">Step 4: Final Guide</h3>
-            <div className="space-y-6">
-              {[
-                { t: 'Forms', d: voterType === 'New Voter' ? 'Fill Form 6 for registration.' : 'Fill Form 8 for corrections.' },
-                { t: 'Docs', d: 'Keep Aadhar and proof of residence ready.' },
-                { t: 'Visit', d: 'Verification will be done by BLO.' }
-              ].map((item, i) => (
-                <div key={i} className="border-l-8 border-neon-cyan pl-6 py-2">
-                  <h4 className="font-black uppercase text-neon-cyan">{item.t}</h4>
-                  <p className="text-sm font-bold uppercase">{item.d}</p>
-                </div>
-              ))}
-            </div>
-            <nav className="flex flex-col gap-4">
-              <a 
-                href="https://voters.eci.gov.in" 
-                target="_blank" 
-                className="w-full bg-hc-white text-hc-black p-6 font-black uppercase text-center flex items-center justify-center gap-3 border-4 border-hc-black hover:bg-neon-yellow transition-all"
-              >
-                Official ECI Portal <ExternalLink size={20} />
-              </a>
-              <button onClick={() => setStep(1)} className="text-xs font-black uppercase underline opacity-50 hover:opacity-100">Restart Process</button>
-            </nav>
-          </section>
-        );
+  return (
+    <section className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+      <h3 className="text-3xl font-black uppercase italic text-neon-cyan">Step 4: Document Check</h3>
+      
+      {/* Grid for Document Uploaders */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <DocumentUploader 
+          label="Identity Proof" 
+          description="Aadhar, PAN, or Passport" 
+        />
+        <DocumentUploader 
+          label="Address Proof" 
+          description="Utility Bill or Rent Agreement" 
+        />
+      </div>
+
+      <div className="bg-neon-yellow/10 border-l-4 border-neon-yellow p-4">
+        <p className="text-[10px] font-black uppercase text-neon-yellow leading-tight">
+          Note: Ensure documents are less than 2MB and clearly visible for the BLO verification process.
+        </p>
+      </div>
+      
+      <nav className="flex flex-col gap-4 pt-4">
+        <a 
+          href="https://voters.eci.gov.in" 
+          target="_blank" 
+          className="w-full bg-hc-white text-hc-black p-6 font-black uppercase text-center flex items-center justify-center gap-3 border-4 border-hc-black hover:bg-neon-cyan transition-all"
+        >
+          Finalize on ECI Portal <ExternalLink size={20} />
+        </a>
+        <button onClick={() => setStep(1)} className="text-xs font-black uppercase underline opacity-50">
+          Start Over
+        </button>
+      </nav>
+    </section>
+  );
       default:
         return null;
     }
