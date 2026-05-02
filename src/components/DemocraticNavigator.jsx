@@ -16,6 +16,14 @@ const states = [
   "Uttarakhand", "West Bengal"
 ];
 
+/**
+ * DemocraticNavigator Component
+ * A 4-step state-managed interactive wizard that guides users through the election process.
+ * Features strict accessibility, React.memo optimization, and live API polling.
+ *
+ * @component
+ * @returns {JSX.Element} The interactive stepper interface
+ */
 const DemocraticNavigator = () => {
   const [step, setStep] = useState(1);
   const [voterType, setVoterType] = useState(null);
@@ -185,6 +193,8 @@ const DemocraticNavigator = () => {
                       title="Polling Booth Locator"
                       width="100%"
                       height="100%"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
                       style={{ border: 0, filter: 'grayscale(1) invert(1) contrast(1.2)' }}
                       src={`https://www.google.com/maps?q=${pincode}+polling+station&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                     />

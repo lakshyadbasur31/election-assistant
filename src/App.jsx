@@ -2,6 +2,14 @@ import React, { memo } from 'react';
 import DemocraticNavigator from './components/DemocraticNavigator';
 import { Vote, ShieldCheck, TrendingUp, Calendar, Zap, ChevronRight, CalendarPlus } from 'lucide-react';
 
+/**
+ * Main Application Component
+ * Wraps the dashboard layout, quick resources, and the primary DemocraticNavigator wizard.
+ * Optimized with React.memo for rendering efficiency.
+ *
+ * @component
+ * @returns {JSX.Element} The root application layout
+ */
 const App = memo(function App() {
   return (
     <div className="min-h-screen bg-hc-black text-hc-white selection:bg-neon-yellow selection:text-hc-black font-sans">
