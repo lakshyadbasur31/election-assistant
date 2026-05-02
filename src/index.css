@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon-yellow: #FBFF00;
+  --color-neon-cyan: #00FBFF;
+  --color-hc-black: #000000;
+  --color-hc-white: #FFFFFF;
+}
+
+@layer base {
+  body {
+    @apply bg-hc-black text-hc-white font-sans antialiased;
+  }
+
+  /* High Contrast Accessibility Focus States */
+  :focus-visible {
+    @apply outline-4 outline-neon-yellow outline-offset-4;
+  }
+}
+
+@layer utilities {
+  .text-shadow-hc {
+    text-shadow: 2px 2px 0px #000;
+  }
+}
