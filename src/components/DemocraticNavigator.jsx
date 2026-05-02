@@ -196,7 +196,7 @@ const DemocraticNavigator = () => {
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
                       style={{ border: 0, filter: 'grayscale(1) invert(1) contrast(1.2)' }}
-                      src={`https://www.google.com/maps?q=${pincode}+polling+station&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                      src={`https://www.google.com/maps?q=${pincode}+polling+station, ${locationData.District}, ${locationData.State}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                     />
                     <div className="absolute top-2 left-2 flex gap-2">
                       <div className="bg-neon-yellow text-hc-black text-[10px] px-2 py-1 font-black uppercase shadow-[2px_2px_0px_0px_#000] flex items-center gap-1">
