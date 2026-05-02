@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, memo } from 'react';
 import { UserPlus, MapPin, CheckCircle2, AlertCircle, ExternalLink, ChevronRight, ChevronLeft, TrendingUp, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import DocumentUploader from './DocumentUploader';
 
 function cn(...inputs) {
   return twMerge(clsx(inputs));
