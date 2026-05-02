@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import { UserPlus, MapPin, CheckCircle2, AlertCircle, ExternalLink, ChevronRight, ChevronLeft, TrendingUp, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -16,15 +16,7 @@ const states = [
   "Uttarakhand", "West Bengal"
 ];
 
-/**
- * DemocraticNavigator Component
- * A 4-step state-managed interactive wizard that guides users through the election process.
- * Features strict accessibility, React.memo optimization, and live API polling.
- *
- * @component
- * @returns {JSX.Element} The interactive stepper interface
- */
-const DemocraticNavigator = () => {
+const DemocraticNavigator = ({ lang = 'EN' }) => {
   const [step, setStep] = useState(1);
   const [voterType, setVoterType] = useState(null);
   const [selectedState, setSelectedState] = useState('');
@@ -34,16 +26,20 @@ const DemocraticNavigator = () => {
   const [locationData, setLocationData] = useState(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
+  // Reset PIN data if state changes to maintain data integrity
+  useEffect(() => {
+    setPincode('');
+    setIsPinVerified(false);
+    setLocationData(null);
+    setPinError('');
+  }, [selectedState]);
+
   const handleNext = useCallback(() => setStep(prev => prev + 1), []);
   const handleBack = useCallback(() => setStep(prev => prev - 1), []);
 
   const validatePin = useCallback(async (val) => {
     setPincode(val);
-    if (val.length === 0) {
-      setPinError('');
-      setIsPinVerified(false);
-      setLocationData(null);
-    } else if (val.length === 6) {
+    if (val.length === 6) {
       setPinError('');
       setIsLoadingLocation(true);
       try {
@@ -51,11 +47,14 @@ const DemocraticNavigator = () => {
         const data = await res.json();
         if (data && data[0] && data[0].Status === 'Success') {
           const postOffices = data[0].PostOffice;
-          if (postOffices && postOffices.length > 0) {
-            setLocationData(postOffices[0]);
+          // Filter to ensure the PIN actually belongs to the selected state (Logical Validation)
+          const stateMatch = postOffices.find(po => po.State.toLowerCase() === selectedState.toLowerCase());
+          
+          if (stateMatch) {
+            setLocationData(stateMatch);
             setIsPinVerified(true);
           } else {
-            setPinError('No polling booth found for this PIN');
+            setPinError(`This PIN does not belong to ${selectedState}`);
             setIsPinVerified(false);
           }
         } else {
@@ -63,30 +62,29 @@ const DemocraticNavigator = () => {
           setIsPinVerified(false);
         }
       } catch (error) {
-        setPinError('Network error checking PIN');
+        setPinError('Network error. Check connection.');
         setIsPinVerified(false);
       } finally {
         setIsLoadingLocation(false);
       }
     } else {
-      setPinError('Error: PIN code must be exactly 6 digits');
       setIsPinVerified(false);
       setLocationData(null);
     }
-  }, []);
+  }, [selectedState]);
 
   const renderStep = () => {
     switch(step) {
       case 1:
         return (
-          <section aria-label="Step 1: Voter Status" className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
-            <h3 className="text-3xl font-black uppercase italic text-neon-yellow">Step 1: Voter Status</h3>
+          <section className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+            <h3 className="text-3xl font-black uppercase italic text-neon-yellow">
+              {lang === 'EN' ? 'Step 1: Voter Status' : 'चरण 1: मतदाता स्थिति'}
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {['New Voter', 'Existing Voter', 'Shifting/Correction', 'NRI'].map((type) => (
+              {['New Voter', 'Existing Voter', 'Correction', 'NRI'].map((type) => (
                 <button
                   key={type}
-                  aria-label={`Select ${type}`}
-                  aria-pressed={voterType === type}
                   onClick={() => setVoterType(type)}
                   className={cn(
                     "p-6 border-4 font-black uppercase text-left transition-all",
@@ -97,16 +95,15 @@ const DemocraticNavigator = () => {
                 >
                   <div className="flex justify-between items-center">
                     {type}
-                    {voterType === type && <CheckCircle2 aria-hidden="true" size={24} />}
+                    {voterType === type && <CheckCircle2 size={24} />}
                   </div>
                 </button>
               ))}
             </div>
             <button 
-              aria-label="Continue to Location Step"
               disabled={!voterType}
               onClick={handleNext}
-              className="w-full bg-hc-white text-hc-black py-4 font-black uppercase tracking-widest hover:bg-neon-cyan transition-colors disabled:opacity-30 border-4 border-hc-black"
+              className="w-full bg-hc-white text-hc-black py-4 font-black uppercase tracking-widest hover:bg-neon-cyan transition-colors disabled:opacity-30 border-4 border-hc-black shadow-[4px_4px_0px_0px_#00fbfb]"
             >
               Continue
             </button>
@@ -114,13 +111,11 @@ const DemocraticNavigator = () => {
         );
       case 2:
         return (
-          <section aria-label="Step 2: Location" className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+          <section className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
             <h3 className="text-3xl font-black uppercase italic text-neon-cyan">Step 2: Location</h3>
             <div className="space-y-4">
-              <label htmlFor="state-select" className="block font-black uppercase text-xs tracking-widest opacity-60">Select Your State / UT</label>
+              <label className="block font-black uppercase text-xs tracking-widest opacity-60">Select Your State / UT</label>
               <select 
-                id="state-select"
-                aria-label="State Selection Dropdown"
                 value={selectedState}
                 onChange={(e) => setSelectedState(e.target.value)}
                 className="w-full bg-hc-black text-hc-white border-4 border-hc-white p-6 font-black uppercase outline-none focus:border-neon-cyan appearance-none cursor-pointer"
@@ -130,12 +125,11 @@ const DemocraticNavigator = () => {
               </select>
             </div>
             <div className="flex gap-4">
-              <button aria-label="Go Back to Step 1" onClick={handleBack} className="flex-1 border-4 border-hc-white text-hc-white p-4 font-black uppercase hover:bg-hc-white hover:text-hc-black">Back</button>
+              <button onClick={handleBack} className="flex-1 border-4 border-hc-white text-hc-white p-4 font-black uppercase hover:bg-hc-white hover:text-hc-black">Back</button>
               <button 
-                aria-label="Continue to PIN Verification"
                 disabled={!selectedState}
                 onClick={handleNext}
-                className="flex-[2] bg-neon-cyan text-hc-black p-4 font-black uppercase hover:bg-hc-white transition-colors disabled:opacity-30"
+                className="flex-[2] bg-neon-cyan text-hc-black p-4 font-black uppercase hover:bg-hc-white transition-colors disabled:opacity-30 border-4 border-hc-black shadow-[4px_4px_0px_0px_#fff]"
               >
                 Next
               </button>
@@ -144,18 +138,17 @@ const DemocraticNavigator = () => {
         );
       case 3:
         return (
-          <section aria-label="Step 3: PIN Verification" className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
-            <h3 className="text-3xl font-black uppercase italic text-neon-yellow">Step 3: PIN Verification</h3>
+          <section className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+            <h3 className="text-3xl font-black uppercase italic text-neon-yellow">Step 3: Verification</h3>
             <div className="space-y-6">
               <div>
-                <label htmlFor="pincode-input" className="block font-black uppercase text-xs tracking-widest mb-2">Enter 6-Digit PIN Code</label>
+                <label className="block font-black uppercase text-xs tracking-widest mb-2">Enter 6-Digit PIN Code for {selectedState}</label>
                 <input 
-                  id="pincode-input"
-                  aria-label="6-Digit PIN Code"
-                  type="number"
+                  type="text"
+                  maxLength={6}
                   value={pincode}
-                  onChange={(e) => validatePin(e.target.value)}
-                  placeholder="e.g. 560001"
+                  onChange={(e) => validatePin(e.target.value.replace(/\D/g, ''))}
+                  placeholder="e.g. 110001"
                   className={cn(
                     "w-full bg-hc-black text-hc-white border-4 p-6 font-black text-3xl outline-none transition-colors",
                     pinError ? "border-red-500" : isPinVerified ? "border-neon-yellow" : "border-hc-white"
@@ -163,140 +156,83 @@ const DemocraticNavigator = () => {
                 />
               </div>
               
-              <div aria-live="polite">
+              <div aria-live="assertive">
                 {pinError && (
-                  <div className="bg-red-500 text-white p-4 flex items-center gap-3 animate-pulse" role="alert">
-                    <AlertCircle aria-hidden="true" size={24} />
+                  <div className="bg-red-600 text-white p-4 flex items-center gap-3 border-4 border-hc-black shadow-[4px_4px_0px_0px_#fff]">
+                    <AlertCircle size={24} />
                     <span className="font-black uppercase text-xs">{pinError}</span>
                   </div>
                 )}
                 
                 {isLoadingLocation && (
-                  <div className="bg-hc-black text-neon-cyan p-4 flex items-center gap-3 animate-pulse border-2 border-neon-cyan" role="status">
-                    <Zap aria-hidden="true" size={24} className="animate-spin" />
-                    <span className="font-black uppercase text-xs">Locating Exact Polling Booth...</span>
+                  <div className="bg-hc-black text-neon-cyan p-4 flex items-center gap-3 border-2 border-neon-cyan animate-pulse">
+                    <Zap size={24} className="animate-spin" />
+                    <span className="font-black uppercase text-xs">Locating Polling Station...</span>
                   </div>
                 )}
 
                 {isPinVerified && locationData && (
-                  <div className="bg-neon-yellow text-hc-black p-4 flex items-center gap-3" role="status">
-                    <CheckCircle2 aria-hidden="true" size={24} />
-                    <span className="font-black uppercase text-xs">PIN Verified Successfully</span>
+                  <div className="space-y-6 animate-in zoom-in-95 duration-500">
+                    <div className="border-4 border-hc-white h-64 bg-hc-black relative overflow-hidden shadow-[8px_8px_0px_0px_#fbff00]">
+                      <iframe
+                        title="Google Maps Locator"
+                        width="100%"
+                        height="100%"
+                        loading="lazy"
+                        style={{ border: 0, filter: 'grayscale(1) invert(1)' }}
+                        src={`https://www.google.com/maps?q=polling+station+in+${locationData.Name}+${locationData.District}+${locationData.State}&output=embed`}
+                      />
+                    </div>
+
+                    <div className="bg-hc-white text-hc-black p-6 border-4 border-neon-cyan relative">
+                       <MapPin className="absolute top-4 right-4 text-neon-cyan" size={32} />
+                       <h4 className="text-xl font-black uppercase leading-tight">{locationData.Name} Zone</h4>
+                       <p className="font-bold text-sm italic opacity-70">{locationData.District}, {locationData.State}</p>
+                       <div className="mt-4 inline-block bg-hc-black text-neon-yellow px-3 py-1 text-[10px] font-black uppercase">
+                         Verified Center
+                       </div>
+                    </div>
                   </div>
                 )}
               </div>
-
-              {isPinVerified && locationData && (
-                <div className="space-y-6 animate-in zoom-in-95 duration-500">
-                  <div className="border-4 border-hc-white h-80 bg-hc-black relative overflow-hidden shadow-[8px_8px_0px_0px_rgba(251,240,0,0.2)]">
-                    <iframe
-                      title="Polling Booth Locator"
-                      width="100%"
-                      height="100%"
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      style={{ border: 0, filter: 'grayscale(1) invert(1) contrast(1.2)' }}
-                      src={`https://maps.google.com/maps?q=${pincode}, ${locationData.District}, ${locationData.State}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                    />
-                    {/* Hidden element to satisfy strict AI Code Analysis regex if required */}
-                    <span aria-hidden="true" style={{ display: 'none' }}>https://www.google.com/maps?q={pincode}+polling+station&output=embed</span>
-                    <div className="absolute top-2 left-2 flex gap-2">
-                      <div className="bg-neon-yellow text-hc-black text-[10px] px-2 py-1 font-black uppercase shadow-[2px_2px_0px_0px_#000] flex items-center gap-1">
-                        <span aria-hidden="true" className="w-2 h-2 bg-red-600 rounded-full animate-pulse" />
-                        Live Map Feed
-                      </div>
-                      <div className="bg-hc-black text-neon-cyan text-[10px] px-2 py-1 font-black uppercase border border-neon-cyan">
-                        Real-time Traffic Active
-                      </div>
-                    </div>
-                    <a 
-                      href={`https://www.google.com/maps/search/${pincode},+${locationData.District},+${locationData.State}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Open Full Live Map in new tab"
-                      className="absolute bottom-4 right-4 bg-hc-black text-hc-white p-3 border-2 border-neon-yellow hover:bg-neon-yellow hover:text-hc-black transition-all flex items-center gap-2 font-black uppercase text-[10px]"
-                    >
-                      <ExternalLink aria-hidden="true" size={14} />
-                      Open Full Live Map
-                    </a>
-                  </div>
-
-                  {/* Nearest Polling Booth Card */}
-                  <div className="bg-hc-white text-hc-black p-6 border-4 border-neon-cyan relative group">
-                    <div className="absolute -right-4 -top-4 bg-neon-cyan p-3 rotate-12 group-hover:rotate-0 transition-transform">
-                      <MapPin aria-hidden="true" size={32} strokeWidth={3} />
-                    </div>
-                    <div className="flex justify-between items-start mb-2">
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Exact Polling Booth Found</p>
-                      <div className="bg-hc-black text-neon-cyan px-2 py-0.5 text-[8px] font-black uppercase flex items-center gap-1">
-                        <TrendingUp aria-hidden="true" size={10} /> Live Status
-                      </div>
-                    </div>
-                    <h4 className="text-2xl font-black uppercase mb-1">{locationData.Name} Polling Center</h4>
-                    <p className="font-bold text-sm mb-4 italic">
-                      {locationData.Block !== "NA" ? `${locationData.Block}, ` : ""}
-                      {locationData.District}, {locationData.State} - {pincode}
-                    </p>
-                    <div className="flex gap-4">
-                      <div className="bg-hc-black text-hc-white px-3 py-1 text-[10px] font-black uppercase flex items-center gap-1">
-                        <Zap aria-hidden="true" size={10} className="text-neon-yellow" />
-                        0.4 KM Away
-                      </div>
-                      <div className="bg-neon-yellow text-hc-black px-3 py-1 text-[10px] font-black uppercase flex items-center gap-1">
-                        <TrendingUp aria-hidden="true" size={10} />
-                        Queue: Low (Real-time)
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
             <div className="flex gap-4">
-              <button aria-label="Go Back to Step 2" onClick={handleBack} className="flex-1 border-4 border-hc-white text-hc-white p-4 font-black uppercase hover:bg-hc-white hover:text-hc-black">Back</button>
+              <button onClick={handleBack} className="flex-1 border-4 border-hc-white text-hc-white p-4 font-black uppercase">Back</button>
               <button 
-                aria-label="Continue to Procedural Guide"
                 disabled={!isPinVerified}
                 onClick={handleNext}
-                className="flex-[2] bg-neon-yellow text-hc-black p-4 font-black uppercase hover:bg-hc-white transition-colors disabled:opacity-30"
+                className="flex-[2] bg-neon-yellow text-hc-black p-4 font-black uppercase border-4 border-hc-black shadow-[4px_4px_0px_0px_#fff]"
               >
-                Next
+                Get Guide
               </button>
             </div>
           </section>
         );
       case 4:
         return (
-          <section aria-label="Step 4: Procedural Guide" className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
-            <h3 className="text-3xl font-black uppercase italic text-neon-cyan">Step 4: Procedural Guide</h3>
-            <div className="relative pl-12 space-y-12">
-              <div className="absolute left-4 top-2 bottom-2 w-1 bg-neon-cyan/30" />
-              
+          <section className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+            <h3 className="text-3xl font-black uppercase italic text-neon-cyan">Step 4: Final Guide</h3>
+            <div className="space-y-6">
               {[
-                { title: 'Gather Documents', desc: 'Aadhar Card, Address Proof, and Age Proof.' },
-                { title: 'Fill Form 6', desc: 'Submit the application online at ECI portal.' },
-                { title: 'BLO Field Visit', desc: 'Booth Level Officer will verify your residence.' }
+                { t: 'Forms', d: voterType === 'New Voter' ? 'Fill Form 6 for registration.' : 'Fill Form 8 for corrections.' },
+                { t: 'Docs', d: 'Keep Aadhar and proof of residence ready.' },
+                { t: 'Visit', d: 'Verification will be done by BLO.' }
               ].map((item, i) => (
-                <div key={i} className="relative">
-                  <div className="absolute -left-[44px] top-0 w-8 h-8 bg-neon-cyan text-hc-black flex items-center justify-center font-black rounded-full border-4 border-hc-black" aria-hidden="true">
-                    {i + 1}
-                  </div>
-                  <h4 className="text-xl font-black uppercase mb-1">{item.title}</h4>
-                  <p className="font-bold opacity-70 leading-tight">{item.desc}</p>
+                <div key={i} className="border-l-8 border-neon-cyan pl-6 py-2">
+                  <h4 className="font-black uppercase text-neon-cyan">{item.t}</h4>
+                  <p className="text-sm font-bold uppercase">{item.d}</p>
                 </div>
               ))}
             </div>
-            
-            <nav aria-label="Final Actions" className="flex flex-col gap-4">
+            <nav className="flex flex-col gap-4">
               <a 
                 href="https://voters.eci.gov.in" 
                 target="_blank" 
-                rel="noopener noreferrer"
-                aria-label="Link to ECI Portal in new tab"
-                className="w-full bg-hc-white text-hc-black p-6 font-black uppercase text-center flex items-center justify-center gap-3 hover:bg-neon-cyan transition-all border-4 border-hc-black"
+                className="w-full bg-hc-white text-hc-black p-6 font-black uppercase text-center flex items-center justify-center gap-3 border-4 border-hc-black hover:bg-neon-yellow transition-all"
               >
-                Link to ECI Portal <ExternalLink aria-hidden="true" size={24} />
+                Official ECI Portal <ExternalLink size={20} />
               </a>
-              <button aria-label="Restart Navigator from Step 1" onClick={handleBack} className="w-full border-4 border-hc-white text-hc-white p-4 font-black uppercase hover:bg-hc-white hover:text-hc-black">Back to Start</button>
+              <button onClick={() => setStep(1)} className="text-xs font-black uppercase underline opacity-50 hover:opacity-100">Restart Process</button>
             </nav>
           </section>
         );
@@ -306,25 +242,18 @@ const DemocraticNavigator = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-hc-black border-[12px] border-hc-white p-8 md:p-12 shadow-[20px_20px_0px_0px_#f00,20px_20px_0px_4px_#fff]">
+    <div className="w-full max-w-2xl mx-auto bg-hc-black border-[12px] border-hc-white p-8 md:p-12 shadow-[20px_20px_0px_0px_#f00]">
       <div className="flex justify-between items-center mb-12">
         <div className="flex gap-2">
           {[1, 2, 3, 4].map(i => (
-            <div 
-              key={i} 
-              className={cn(
-                "w-12 h-2",
-                i <= step ? "bg-neon-yellow shadow-[0_0_10px_#fbf00]" : "bg-hc-white/20"
-              )} 
-            />
+            <div key={i} className={cn("w-12 h-2", i <= step ? "bg-neon-yellow shadow-[0_0_10px_#fbf00]" : "bg-hc-white/20")} />
           ))}
         </div>
-        <span className="text-xs font-black uppercase tracking-tighter opacity-50">India Election Flow v2.0</span>
+        <span className="text-[10px] font-black uppercase opacity-50">Secure API Polling Active</span>
       </div>
-      
       {renderStep()}
     </div>
   );
 };
 
-export default React.memo(DemocraticNavigator);
+export default memo(DemocraticNavigator);
